@@ -1,0 +1,529 @@
+# coding: utf-8
+import open3d as o3d
+import numpy as np
+import matplotlib.pyplot as plt
+import time
+import xlsxwriter as xw
+start = time.time()
+# 砂石最小过筛尺寸的计算
+import os
+import sys
+astra_pkg_path = os.path.join("..", "astra-open3d-python")
+# 添加到系统路径里面
+sys.path.append(astra_pkg_path)
+# 自定义库
+from o3d_utils import *  # open3d常用指令包
+np.set_printoptions(precision=3, suppress=True)
+max_label = 1355
+arr1 = []
+arrH = []
+arrW = []
+arrL = []
+nub = range(1, max_label)
+α = 1
+for i in nub:
+    ply = o3d.io.read_point_cloud("A+C0/Dbscan_cluster" + str(i) + ".ply")
+    ply.paint_uniform_color([0.5, 0.5, 0.5])
+    obb = ply.get_oriented_bounding_box()
+    obb.color = [0, 1, 0]  # 绿色
+    length, width, height = obb.extent
+    S1 = [length, width, height]
+    C1 = sorted(S1, reverse=False)  # 将长宽高从小到大排序
+    d1 = C1[0]  # 长宽高中的最小值
+    d2 = C1[1]  # 长宽高中的中间值
+    d3 = C1[2]  # 长宽高中的最大值
+    arrH.append(d1)
+    arrW.append(d2)
+    arrL.append(d3)
+    Particle = d2
+    # Particle = (1/1.414) * α * np.sqrt(d1*d1+d2*d2)  # 取最小的两个值使用勾股定理计算砂石粒径
+    arr1.append(Particle)
+print(arr1)
+
+# 体积的近似计算
+arr2 = []
+nub2 = range(1, max_label)
+for i in nub2:
+    ply = o3d.io.read_point_cloud("A+C0/Dbscan_cluster" + str(i) + ".ply")
+    ply.paint_uniform_color([0.5, 0.5, 0.5])
+    obb = ply.get_oriented_bounding_box()
+    obb.color = [0, 1, 0]  # 绿色
+    length, width, height = obb.extent
+    Vol = length * width * height  # 采用OBB算法最小包围盒体积
+    arr2.append(Vol)
+print(arr2)
+Totalvolume = sum(arr2)  # 砂石总体积arr2 = []
+print('砂石的总体积是：',Totalvolume)
+
+
+# 粒径范围确定
+bound1 = 33  # 定义级配分界点(沥青路面骨料筛孔尺寸(mm))
+bound2 = 32
+bound3 = 31.5
+bound4 = 30
+bound5 = 29
+bound6 = 28
+bound7 = 27
+bound8 = 26.5
+bound9 = 25
+bound10 = 24
+bound11 = 23
+bound12 = 22
+bound13 = 21
+bound14 = 20
+bound15 = 19
+bound16 = 18
+bound17 = 17
+bound18 = 16
+bound19 = 15
+bound20 = 14
+bound21 = 13.2
+bound22 = 12
+bound23 = 11
+bound24 = 10
+bound25 = 9.5
+bound26 = 8
+bound27 = 7
+bound28 = 38
+bound29 = 37.5
+bound30 = 36
+bound31 = 35
+bound32 = 34
+# 通过百分率计算
+class1 = []
+nuba = range(0, max_label - 1)
+for i in nuba:
+    if arr1[i] < bound1:
+        cs = arr2[i]
+        class1.append(cs)
+print(class1)
+total1 = sum(class1)
+print(total1)
+vol_percent1 = (total1 / Totalvolume) * 100
+y1 = np.log10(bound1)
+
+class2 = []
+nuba = range(0, max_label - 1)
+for i in nuba:
+    if arr1[i] < bound2:
+        cs = arr2[i]
+        class2.append(cs)
+print(class2)
+total2 = sum(class2)
+print(total2)
+vol_percent2 = (total2 / Totalvolume) * 100
+y2 = np.log10(bound2)
+
+class3 = []
+nuba = range(0, max_label - 1)
+for i in nuba:
+    if arr1[i] < bound3:
+        cs = arr2[i]
+        class3.append(cs)
+print(class3)
+total3 = sum(class3)
+print(total3)
+vol_percent3 = (total3 / Totalvolume) * 100
+y3 = np.log10(bound3)
+
+class4 = []
+nuba = range(0, max_label - 1)
+for i in nuba:
+    if arr1[i] < bound4:
+        cs = arr2[i]
+        class4.append(cs)
+print(class4)
+total4 = sum(class4)
+print(total4)
+vol_percent4 = (total4 / Totalvolume) * 100
+y4 = np.log10(bound4)
+
+class5 = []
+nuba = range(0, max_label - 1)
+for i in nuba:
+    if arr1[i] < bound5:
+        cs = arr2[i]
+        class5.append(cs)
+print(class5)
+total5 = sum(class5)
+print(total5)
+vol_percent5 = (total5 / Totalvolume) * 100
+y5 = np.log10(bound5)
+
+class6 = []
+nuba = range(0, max_label - 1)
+for i in nuba:
+    if arr1[i] < bound6:
+        cs = arr2[i]
+        class6.append(cs)
+print(class6)
+total6 = sum(class6)
+print(total6)
+vol_percent6 = (total6 / Totalvolume) * 100
+y6 = np.log10(bound6)
+
+class7 = []
+nuba = range(0, max_label - 1)
+for i in nuba:
+    if arr1[i] < bound7:
+        cs = arr2[i]
+        class7.append(cs)
+print(class7)
+total7 = sum(class7)
+print(total7)
+vol_percent7 = (total7 / Totalvolume) * 100
+y7 = np.log10(bound7)
+
+class8 = []
+nuba = range(0, max_label - 1)
+for i in nuba:
+    if arr1[i] < bound8:
+        cs = arr2[i]
+        class8.append(cs)
+print(class8)
+total8 = sum(class8)
+print(total8)
+vol_percent8 = (total8 / Totalvolume) * 100
+y8 = np.log10(bound8)
+
+class9 = []
+nuba = range(0, max_label - 1)
+for i in nuba:
+    if arr1[i] < bound9:
+        cs = arr2[i]
+        class9.append(cs)
+print(class9)
+total9 = sum(class9)
+print(total9)
+vol_percent9 = (total9 / Totalvolume) * 100
+y9 = np.log10(bound9)
+
+class10 = []
+nuba = range(0, max_label - 1)
+for i in nuba:
+    if arr1[i] < bound10:
+        cs = arr2[i]
+        class10.append(cs)
+print(class10)
+total10 = sum(class10)
+print(total10)
+vol_percent10 = (total10 / Totalvolume) * 100
+y10 = np.log10(bound10)
+
+class11 = []
+nuba = range(0, max_label - 1)
+for i in nuba:
+    if arr1[i] < bound11:
+        cs = arr2[i]
+        class11.append(cs)
+print(class11)
+total11 = sum(class11)
+print(total11)
+vol_percent11 = (total11 / Totalvolume) * 100
+y11 = np.log10(bound11)
+
+class12 = []
+nuba = range(0, max_label - 1)
+for i in nuba:
+    if arr1[i] < bound12:
+        cs = arr2[i]
+        class12.append(cs)
+print(class12)
+total12 = sum(class12)
+print(total12)
+vol_percent12 = (total12 / Totalvolume) * 100
+y12 = np.log10(bound12)
+
+class13 = []
+nuba = range(0, max_label - 1)
+for i in nuba:
+    if arr1[i] < bound13:
+        cs = arr2[i]
+        class13.append(cs)
+print(class13)
+total13 = sum(class13)
+print(total13)
+vol_percent13 = (total13 / Totalvolume) * 100
+y13 = np.log10(bound13)
+
+class14 = []
+nuba = range(0, max_label - 1)
+for i in nuba:
+    if arr1[i] < bound14:
+        cs = arr2[i]
+        class14.append(cs)
+print(class14)
+total14 = sum(class14)
+print(total14)
+vol_percent14 = (total14 / Totalvolume) * 100
+y14 = np.log10(bound14)
+
+class15 = []
+nuba = range(0, max_label - 1)
+for i in nuba:
+    if arr1[i] < bound15:
+        cs = arr2[i]
+        class15.append(cs)
+print(class15)
+total15 = sum(class15)
+print(total15)
+vol_percent15 = (total15 / Totalvolume) * 100
+y15 = np.log10(bound15)
+
+class16 = []
+nuba = range(0, max_label - 1)
+for i in nuba:
+    if arr1[i] < bound16:
+        cs = arr2[i]
+        class16.append(cs)
+print(class16)
+total16 = sum(class16)
+print(total16)
+vol_percent16 = (total16 / Totalvolume) * 100
+y16 = np.log10(bound16)
+
+class17 = []
+nuba = range(0, max_label - 1)
+for i in nuba:
+    if arr1[i] < bound17:
+        cs = arr2[i]
+        class17.append(cs)
+print(class17)
+total17 = sum(class17)
+print(total17)
+vol_percent17 = (total17 / Totalvolume) * 100
+y17 = np.log10(bound17)
+
+class18 = []
+nuba = range(0, max_label - 1)
+for i in nuba:
+    if arr1[i] < bound18:
+        cs = arr2[i]
+        class18.append(cs)
+print(class18)
+total18 = sum(class18)
+print(total18)
+vol_percent18 = (total18 / Totalvolume) * 100
+y18 = np.log10(bound18)
+
+class19 = []
+nuba = range(0, max_label - 1)
+for i in nuba:
+    if arr1[i] < bound19:
+        cs = arr2[i]
+        class19.append(cs)
+print(class19)
+total19 = sum(class19)
+print(total19)
+vol_percent19 = (total19 / Totalvolume) * 100
+y19 = np.log10(bound19)
+
+class20 = []
+nuba = range(0, max_label - 1)
+for i in nuba:
+    if arr1[i] < bound20:
+        cs = arr2[i]
+        class20.append(cs)
+print(class20)
+total20 = sum(class20)
+print(total20)
+vol_percent20 = (total20 / Totalvolume) * 100
+y20 = np.log10(bound20)
+
+class21 = []
+nuba = range(0, max_label - 1)
+for i in nuba:
+    if arr1[i] < bound21:
+        cs = arr2[i]
+        class21.append(cs)
+print(class21)
+total21 = sum(class21)
+print(total21)
+vol_percent21 = (total21 / Totalvolume) * 100
+y21 = np.log10(bound21)
+
+class22 = []
+nuba = range(0, max_label - 1)
+for i in nuba:
+    if arr1[i] < bound22:
+        cs = arr2[i]
+        class22.append(cs)
+print(class22)
+total22 = sum(class22)
+print(total22)
+vol_percent22 = (total22 / Totalvolume) * 100
+y22 = np.log10(bound22)
+
+class23 = []
+nuba = range(0, max_label - 1)
+for i in nuba:
+    if arr1[i] < bound23:
+        cs = arr2[i]
+        class23.append(cs)
+print(class23)
+total23 = sum(class23)
+print(total23)
+vol_percent23 = (total23 / Totalvolume) * 100
+y23 = np.log10(bound23)
+
+class24 = []
+nuba = range(0, max_label - 1)
+for i in nuba:
+    if arr1[i] < bound24:
+        cs = arr2[i]
+        class24.append(cs)
+print(class24)
+total24 = sum(class24)
+print(total24)
+vol_percent24 = (total24 / Totalvolume) * 100
+y24 = np.log10(bound24)
+
+class25 = []
+nuba = range(0, max_label - 1)
+for i in nuba:
+    if arr1[i] < bound25:
+        cs = arr2[i]
+        class25.append(cs)
+print(class25)
+total25 = sum(class25)
+print(total25)
+vol_percent25 = (total25 / Totalvolume) * 100
+y25 = np.log10(bound25)
+
+class26 = []
+nuba = range(0, max_label - 1)
+for i in nuba:
+    if arr1[i] < bound26:
+        cs = arr2[i]
+        class26.append(cs)
+print(class26)
+total26 = sum(class26)
+print(total26)
+vol_percent26 = (total26 / Totalvolume) * 100
+y26 = np.log10(bound26)
+
+class27 = []
+nuba = range(0, max_label - 1)
+for i in nuba:
+    if arr1[i] < bound27:
+        cs = arr2[i]
+        class27.append(cs)
+print(class27)
+total27 = sum(class27)
+print(total27)
+vol_percent27 = (total27 / Totalvolume) * 100
+y27 = np.log10(bound27)
+
+class28 = []
+nuba = range(0, max_label - 1)
+for i in nuba:
+    if arr1[i] < bound28:
+        cs = arr2[i]
+        class28.append(cs)
+print(class28)
+total28 = sum(class28)
+print(total28)
+vol_percent28 = (total28 / Totalvolume) * 100
+y28 = np.log10(bound28)
+
+class29 = []
+nuba = range(0, max_label - 1)
+for i in nuba:
+    if arr1[i] < bound29:
+        cs = arr2[i]
+        class29.append(cs)
+print(class29)
+total29 = sum(class29)
+print(total29)
+vol_percent29 = (total29 / Totalvolume) * 100
+y29 = np.log10(bound29)
+
+class30 = []
+nuba = range(0, max_label - 1)
+for i in nuba:
+    if arr1[i] < bound30:
+        cs = arr2[i]
+        class30.append(cs)
+print(class30)
+total30 = sum(class30)
+print(total30)
+vol_percent30 = (total30 / Totalvolume) * 100
+y30 = np.log10(bound30)
+
+class31 = []
+nuba = range(0, max_label - 1)
+for i in nuba:
+    if arr1[i] < bound31:
+        cs = arr2[i]
+        class31.append(cs)
+print(class31)
+total31 = sum(class31)
+print(total31)
+vol_percent31 = (total31 / Totalvolume) * 100
+y31 = np.log10(bound31)
+
+
+
+class32 = []
+nuba = range(0, max_label - 1)
+for i in nuba:
+    if arr1[i] < bound32:
+        cs = arr2[i]
+        class32.append(cs)
+print(class32)
+total32 = sum(class32)
+print(total32)
+vol_percent32 = (total32 / Totalvolume) * 100
+y32 = np.log10(bound32)
+
+
+
+x_values = np.array([y28, y29, y30, y31, y32, y1, y2, y3, y4, y5, y6, y7, y8, y9, y10, y11, y12, y13, y14, y15, y16, y17, y18, y19, y20, y21, y22, y23, y24,  y25, y26, y27])
+y_values = np.array(
+    [vol_percent28, vol_percent29, vol_percent30, vol_percent31, vol_percent32, vol_percent1, vol_percent2, vol_percent3, vol_percent4, vol_percent5, vol_percent6, vol_percent7, vol_percent8, vol_percent9,
+     vol_percent10, vol_percent11, vol_percent12, vol_percent13, vol_percent14, vol_percent15, vol_percent16, vol_percent17, vol_percent18, vol_percent19, vol_percent20, vol_percent21, vol_percent22, vol_percent23, vol_percent24,vol_percent25,vol_percent26,vol_percent27])
+print(y_values)
+
+
+def xw_toExcel(data, fileName):  # xlsxwriter库储存数据到excel
+    workbook = xw.Workbook(fileName)  # 创建工作簿
+    worksheet1 = workbook.add_worksheet("sheet1")  # 创建子表
+    worksheet1.activate()  # 激活表
+    title = ['高', '宽', '长']  # 设置表头
+    worksheet1.write_row('A1', title)  # 从A1单元格开始写入表头
+    i = 2  # 从第二行开始写入数据
+    for j in range(len(data)):
+        insertData = [data[j]]
+        row = 'C' + str(i)
+        worksheet1.write_row(row, insertData)
+        i += 1
+    workbook.close()  # 关闭表
+data1 = y_values
+fileName = '粒组1.xlsx'
+xw_toExcel(data1, fileName)
+
+
+# 设置图形窗口大小， 窗体颜色等
+fig = plt.figure(num=None, figsize=None, dpi=100, facecolor=None, edgecolor=None, )
+# plt.plot(x_values,y_values)
+# 解决中文显示问题
+plt.rcParams['font.sans-serif'] = ['SimHei']  # SimHei黑体  FangSong仿宋
+plt.rcParams['axes.unicode_minus'] = False
+
+#x轴采用对数坐标
+
+plt.semilogx(x_values,y_values,linewidth =1.5, color='black', linestyle='-',label=None,alpha=0.7,marker='o',base=10)
+
+plt.title("砂石级配曲线", fontsize=16)  # 标题及字号
+plt.xlabel("筛孔孔径(log10(D))", fontsize=14)  # X轴标题及字号
+plt.ylabel("通过百分率(%)", fontsize=14)  # Y轴标题及字号
+plt.tick_params(axis='both', labelsize=10)  # 刻度大小
+plt.axis('auto')
+plt.grid(axis='both')
+plt.scatter(x_values,  # 横坐标
+            y_values,  # 纵坐标
+            c='red',  # 点的颜色
+            label='function')  # 标签即为点代表的意思
+end = time.time()
+print(f"total cost time={end - start:.2f}s)")
+plt.show()
